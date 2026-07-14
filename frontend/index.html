@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Only Fans</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ginto+Nord:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon"></div>
+                <div>
+                    <div class="logo-text">VOICECORD</div>
+                    <div class="logo-version">DEVELOPED BY SUBHAN</div>
+                </div>
+            </div>
+
+            <div class="nav-section-label">Navigation</div>
+            <div class="nav-item active" id="nav-dashboard" onclick="showSection('dashboard')">
+                <span class="nav-icon"></span> Dashboard
+            </div>
+            <div class="nav-item" id="nav-vc" onclick="showSection('vc')">
+                <span class="nav-icon"></span> Voice Channels
+            </div>
+            <div class="nav-item" id="nav-reactions" onclick="showSection('reactions')">
+                <span class="nav-icon"></span> Reactions
+            </div>
+            <div class="nav-item" id="nav-logs" onclick="showSection('logs')">
+                <span class="nav-icon"></span> Activity Logs
+            </div>
+            <div class="nav-item" id="nav-settings" onclick="showSection('settings')">
+                <span class="nav-icon"></span> Settings
+            </div>
+
+            <div class="sidebar-bottom">
+                <div class="nav-item danger" onclick="logout()">
+                    <span class="nav-icon"></span> Logout
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div id="section-dashboard" class="section-view active">
+                <header class="topbar">
+                    <div class="topbar-title">
+                        <h2>Tokens Overview</h2>
+                        <p class="topbar-sub">Manage your Discord accounts in one place</p>
+                    </div>
+                    <div class="topbar-actions">
+                        <button class="btn" onclick="openAddModal()">
+                            <span>+</span> New Token
+                        </button>
+                    </div>
+                </header>
+
+                <div class="content-area">
+                    <div class="summary-bar">
+                        <div class="summary-item premium-stat">
+                            <span class="si-icon"></span>
+                            <div>
+                                <div class="si-val" id="stat-total">0</div>
+                                <div class="si-lbl">Total Tokens</div>
+                            </div>
+                        </div>
+                        <div class="summary-item premium-stat">
+                            <span class="si-icon"></span>
+                            <div>
+                                <div class="si-val" id="stat-online">0</div>
+                                <div class="si-lbl">Online</div>
+                            </div>
+                        </div>
+                        <div class="summary-item premium-stat">
+                            <span class="si-icon"></span>
+                            <div>
+                                <div class="si-val" id="stat-rpc">0</div>
+                                <div class="si-lbl">Running RPC</div>
+                            </div>
+                        </div>
+                        <div class="summary-item premium-stat">
+                            <span class="si-icon"></span>
+                            <div>
+                                <div class="si-val" id="stat-vc">0</div>
+                                <div class="si-lbl">In Voice</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bulk-actions-panel">
+                        <span class="bulk-label">Operations</span>
+                        <div class="bulk-btns">
+                            <button class="btn btn-secondary btn-sm" onclick="bulkChangeStatus('online')">Set All Online</button>
+                            <button class="btn btn-secondary btn-sm" onclick="bulkChangeStatus('idle')">Set All Idle</button>
+                            <button class="btn btn-secondary btn-sm" onclick="bulkChangeStatus('dnd')">Set All DND</button>
+                            <button class="btn btn-warning btn-sm" onclick="bulkRestart()">Restart All</button>
+                            <button class="btn btn-danger btn-sm" onclick="bulkDisconnectVC()">Disconnect All VCs</button>
+                        </div>
+                    </div>
+
+                    <div class="tokens-grid" id="token-grid"></div>
+                </div>
+            </div>
+
+            <div id="section-vc" class="section-view">
+                <header class="topbar">
+                    <div class="topbar-title">
+                        <h2>Voice Channel Manager</h2>
+                        <p class="topbar-sub">Join or disconnect tokens from voice channels</p>
+                    </div>
+                </header>
+                <div class="content-area">
+                    <div class="vc-list" id="vc-list"></div>
+                </div>
+            </div>
+
+            <div id="section-reactions" class="section-view">
+                <header class="topbar">
+                    <div class="topbar-title">
+                        <h2>Reactions</h2>
+                        <p class="topbar-sub">Send, copy, remove, bomb or schedule reactions — powered by your active tokens</p>
+                    </div>
+                    <div class="topbar-actions">
+                        <div id="global-token-badge" class="token-counter-badge" style="font-size:0.9rem; padding: 6px 14px;"></div>
+                    </div>
+                </header>
+                <div class="content-area flex-col" style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="form-section" style="max-width: 600px; padding: 20px; background: var(--bg-secondary); border-radius: 8px;">
+                        <h2 style="margin-bottom: 15px; color: var(--text-normal); font-size: 1.2rem;">⚡ Send Single Reaction</h2>
+                        <form id="reaction-form" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div class="form-group">
+                                <label>Channel ID</label>
+                                <input type="text" id="channel_id" required placeholder="e.g. 1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>Message ID</label>
+                                <input type="text" id="message_id" required placeholder="e.g. 1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>Emoji</label>
+                                <input type="text" id="emoji" required placeholder="Unicode or custom <:name:id>">
+                            </div>
+                            <div class="form-group">
+                                <label>Reaction Count (tokens to use)</label>
+                                <input type="number" id="count" required min="1" value="1" oninput="updateTokenCounter('count', 'counter-single')">
+                                <div id="counter-single" class="token-counter-badge" style="margin-top:6px;"></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Min Delay (sec)</label>
+                                    <input type="number" id="delay_min" required min="0" step="0.1" value="1.0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Max Delay (sec)</label>
+                                    <input type="number" id="delay_max" required min="0" step="0.1" value="5.0">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn">⚡ Send Reactions</button>
+                        </form>
+                    </div>
+
+                    <div class="form-section" style="max-width: 600px; padding: 20px; background: var(--bg-secondary); border-radius: 8px;">
+                        <h2 style="margin-bottom: 6px; color: var(--text-normal); font-size: 1.2rem;">📋 Copy All Reactions</h2>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Fetch all existing reactions on a message and mirror them using your tokens.</p>
+                        <form id="react-all-form" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div class="form-group">
+                                <label>Channel ID</label>
+                                <input type="text" id="all_channel_id" required placeholder="e.g. 1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>Message ID</label>
+                                <input type="text" id="all_message_id" required placeholder="e.g. 1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>Reaction Count (per emoji)</label>
+                                <input type="number" id="all_count" required min="1" value="1" oninput="updateTokenCounter('all_count', 'counter-all')">
+                                <div id="counter-all" class="token-counter-badge" style="margin-top:6px;"></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Min Delay (sec)</label>
+                                    <input type="number" id="all_delay_min" required min="0" step="0.1" value="1.0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Max Delay (sec)</label>
+                                    <input type="number" id="all_delay_max" required min="0" step="0.1" value="5.0">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn">📋 Copy Reactions</button>
+                        </form>
+                    </div>
+
+                    <!-- Emoji Bomb -->
+                    <div class="form-section" style="max-width: 600px; padding: 20px; background: var(--bg-secondary); border-radius: 8px; border-left: 3px solid #f59e0b;">
+                        <h2 style="margin-bottom: 6px; color: var(--text-normal); font-size: 1.2rem;">💣 Emoji Bomb</h2>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Flood a message with multiple different emojis simultaneously.</p>
+                        <form id="react-bomb-form" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div class="form-group">
+                                <label>Channel ID</label>
+                                <input type="text" id="bomb_channel_id" required placeholder="e.g. 1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>Message ID</label>
+                                <input type="text" id="bomb_message_id" required placeholder="e.g. 1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>Emojis (space or comma separated)</label>
+                                <input type="text" id="bomb_emojis" required placeholder="😂 🔥 ❤️ <:name:id>">
+                            </div>
+                            <div class="form-group">
+                                <label>Tokens per Emoji</label>
+                                <input type="number" id="bomb_count" required min="1" value="1" oninput="updateTokenCounter('bomb_count', 'counter-bomb')">
+                                <div id="counter-bomb" class="token-counter-badge" style="margin-top:6px;"></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Min Delay (sec)</label>
+                                    <input type="number" id="bomb_delay_min" required min="0" step="0.1" value="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label>Max Delay (sec)</label>
+                                    <input type="number" id="bomb_delay_max" required min="0" step="0.1" value="2.0">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn" style="background: linear-gradient(135deg, #f59e0b, #d97706);">💣 Launch Emoji Bomb</button>
+                        </form>
+                    </div>
+
+                    <!-- Remove Reactions -->
+                    <div class="form-section" style="max-width: 600px; padding: 20px; background: var(--bg-secondary); border-radius: 8px; border-left: 3px solid #ef4444;">
+                        <h2 style="margin-bottom: 6px; color: var(--text-normal); font-size: 1.2rem;">🗑️ Remove Reactions</h2>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Remove a specific reaction from a message using multiple tokens.</p>
+                        <form id="react-remove-form" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div class="form-group">
+                                <label>Channel ID</label>
+                                <input type="text" id="remove_channel_id" required placeholder="e.g. 1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>Message ID</label>
+                                <input type="text" id="remove_message_id" required placeholder="e.g. 1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>Emoji to Remove</label>
+                                <input type="text" id="remove_emoji" required placeholder="Unicode or custom <:name:id>">
+                            </div>
+                            <div class="form-group">
+                                <label>Number of Tokens to Use</label>
+                                <input type="number" id="remove_count" required min="1" value="1" oninput="updateTokenCounter('remove_count', 'counter-remove')">
+                                <div id="counter-remove" class="token-counter-badge" style="margin-top:6px;"></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Min Delay (sec)</label>
+                                    <input type="number" id="remove_delay_min" required min="0" step="0.1" value="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label>Max Delay (sec)</label>
+                                    <input type="number" id="remove_delay_max" required min="0" step="0.1" value="2.0">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-danger">🗑️ Remove Reactions</button>
+                        </form>
+                    </div>
+
+                    <!-- Scheduled Reaction -->
+                    <div class="form-section" style="max-width: 600px; padding: 20px; background: var(--bg-secondary); border-radius: 8px; border-left: 3px solid #8b5cf6;">
+                        <h2 style="margin-bottom: 6px; color: var(--text-normal); font-size: 1.2rem;">⏰ Scheduled Reaction</h2>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Schedule a reaction to fire after a countdown (client-side timer).</p>
+                        <form id="react-scheduled-form" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div class="form-group">
+                                <label>Channel ID</label>
+                                <input type="text" id="sched_channel_id" required placeholder="e.g. 1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>Message ID</label>
+                                <input type="text" id="sched_message_id" required placeholder="e.g. 1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>Emoji</label>
+                                <input type="text" id="sched_emoji" required placeholder="Unicode or custom <:name:id>">
+                            </div>
+                            <div class="form-group">
+                                <label>Reaction Count (tokens)</label>
+                                <input type="number" id="sched_count" required min="1" value="1" oninput="updateTokenCounter('sched_count', 'counter-sched')">
+                                <div id="counter-sched" class="token-counter-badge" style="margin-top:6px;"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Delay Before Reacting (seconds)</label>
+                                <input type="number" id="sched_delay" required min="1" value="10" placeholder="e.g. 30">
+                            </div>
+                            <div id="sched-countdown" style="display:none; font-size:1.1rem; font-weight:700; color:#8b5cf6; padding: 10px; background: rgba(139,92,246,0.1); border-radius:6px; text-align:center;"></div>
+                            <button type="submit" class="btn" id="sched-submit-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">⏰ Schedule Reaction</button>
+                            <button type="button" class="btn btn-danger" id="sched-cancel-btn" style="display:none;" onclick="cancelScheduledReaction()">✕ Cancel Schedule</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="section-logs" class="section-view">
+                <header class="topbar">
+                    <div class="topbar-title">
+                        <h2>Activity Logs</h2>
+                        <p class="topbar-sub">Monitor background tasks</p>
+                    </div>
+                </header>
+                <div class="content-area">
+                    <div class="logs-container" style="background: var(--bg-secondary); border-radius: 8px; padding: 20px; overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; color: var(--text-normal);">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--bg-modifier-accent); color: var(--text-muted);">
+                                    <th style="padding: 10px;">Time</th>
+                                    <th style="padding: 10px;">Type</th>
+                                    <th style="padding: 10px;">Target Msg</th>
+                                    <th style="padding: 10px;">Emoji</th>
+                                    <th style="padding: 10px;">Progress</th>
+                                    <th style="padding: 10px;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-table-body">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No activity logs found.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-settings" class="section-view">
+                <header class="topbar">
+                    <div class="topbar-title">
+                        <h2>Dashboard Settings</h2>
+                        <p class="topbar-sub">Customize your experience and manage data</p>
+                    </div>
+                </header>
+                <div class="content-area flex-col" style="gap: 20px;">
+                    <div class="form-section" style="max-width: 600px; padding: 20px; background: var(--bg-secondary); border-radius: 8px;">
+                        <h2 style="margin-bottom: 15px; color: var(--text-normal); font-size: 1.2rem;">Theme Customization</h2>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label>Accent Color</label>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <input type="color" id="theme-accent" style="width: 50px; height: 35px; cursor: pointer; border: none; border-radius: 4px; padding: 0;">
+                                <span id="theme-accent-val" style="color:var(--text-muted); font-size:0.9rem;"></span>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label>Background Color</label>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <input type="color" id="theme-bg" style="width: 50px; height: 35px; cursor: pointer; border: none; border-radius: 4px; padding: 0;">
+                                <span id="theme-bg-val" style="color:var(--text-muted); font-size:0.9rem;"></span>
+                            </div>
+                        </div>
+                        <button class="btn" onclick="saveThemeSettings()">Save Colors</button>
+                        <button class="btn btn-danger" style="margin-left: 10px;" onclick="resetThemeSettings()">Reset Default</button>
+                    </div>
+
+                    <div class="form-section" style="max-width: 600px; padding: 20px; background: var(--bg-secondary); border-radius: 8px;">
+                        <h2 style="margin-bottom: 15px; color: var(--text-normal); font-size: 1.2rem;">Data Management</h2>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 15px;">Backup all your tokens, configurations, and profiles, or restore them from a previous backup.</p>
+                        
+                        <div style="display:flex; gap:15px;">
+                            <button class="btn btn-success" onclick="exportData()">Export Data (.json)</button>
+                            <label class="btn btn-warning" style="cursor: pointer;">
+                                Import Data
+                                <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(event)">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <!-- Profile Modal -->
+    <div class="modal-overlay" id="profile-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="profile-modal-title">Edit User Profile</h3>
+                <button class="modal-close" onclick="closeProfileModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="profile-form" onsubmit="event.preventDefault(); saveProfile();">
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label>Global Name</label>
+                            <input type="text" id="p-global-name" placeholder="Leave blank to keep unchanged">
+                        </div>
+                        <div class="form-group">
+                            <label>About Me (Bio)</label>
+                            <textarea id="p-bio" rows="3" placeholder="Write something about yourself..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Avatar Upload</label>
+                            <input type="file" id="p-avatar" accept="image/png, image/jpeg, image/gif">
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">PNG, JPG, or GIF allowed.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="closeProfileModal()">Cancel</button>
+                        <button type="submit" class="btn btn-success" id="p-save-btn">Save Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Token Modal -->
+    <div class="modal-overlay" id="token-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Add New Token</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="token-form">
+                    <div class="form-section">
+                        <div class="form-section-title">Account</div>
+                        <div class="form-group">
+                            <label>Discord Token</label>
+                            <input type="text" id="t-token" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" required>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Profile</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select id="t-status">
+                                    <option value="online">Online</option>
+                                    <option value="idle">Idle</option>
+                                    <option value="dnd">Do Not Disturb</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Platform</label>
+                                <select id="t-platform">
+                                    <option value="pc">PC</option>
+                                    <option value="mobile">Mobile</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Custom Status Text</label>
+                            <input type="text" id="t-status-text" placeholder="Hello World">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Rich Presence (RPC)</div>
+                        <div class="info-box">
+                            For images use Asset Names from Discord Developer Portal or a direct URL. <strong>Application ID is required when using RPC buttons.</strong>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Application ID (Client ID)</label>
+                                <input type="text" id="t-app-id" placeholder="Required for buttons">
+                            </div>
+                            <div class="form-group">
+                                <label>Activity Type</label>
+                                <select id="t-rpc-type" onchange="toggleStreamingUrl()">
+                                    <option value="playing">Playing</option>
+                                    <option value="streaming">Streaming</option>
+                                    <option value="listening">Listening</option>
+                                    <option value="watching">Watching</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="streaming-url-group" style="display:none;">
+                            <label>Streaming URL (Twitch/YouTube)</label>
+                            <input type="url" id="t-rpc-url" placeholder="https://twitch.tv/example">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Activity Name</label>
+                                <input type="text" id="t-rpc-name" placeholder="Minecraft">
+                            </div>
+                            <div class="form-group">
+                                <label>Details</label>
+                                <input type="text" id="t-rpc-details" placeholder="In a match">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>State</label>
+                            <input type="text" id="t-rpc-state" placeholder="Winning">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Large Image Asset / URL</label>
+                                <input type="text" id="t-rpc-large-img" placeholder="asset name or https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Large Image Text</label>
+                                <input type="text" id="t-rpc-large-text" placeholder="Hover text">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Small Image Asset / URL</label>
+                                <input type="text" id="t-rpc-small-img" placeholder="asset name or https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Small Image Text</label>
+                                <input type="text" id="t-rpc-small-text" placeholder="Hover text">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Start Timestamp</label>
+                                <input type="text" id="t-rpc-timestamp-start" placeholder="e.g. 1507665886 or auto">
+                                <span class="hint">Use 'auto' to start from connect time</span>
+                            </div>
+                            <div class="form-group">
+                                <label>End Timestamp</label>
+                                <input type="text" id="t-rpc-timestamp-end" placeholder="e.g. 1507665886">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">RPC Buttons</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Button 1 Label</label>
+                                <input type="text" id="t-rpc-btn1-label" placeholder="e.g. Website" maxlength="32">
+                            </div>
+                            <div class="form-group">
+                                <label>Button 1 URL</label>
+                                <input type="url" id="t-rpc-btn1-url" placeholder="https://example.com">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Button 2 Label</label>
+                                <input type="text" id="t-rpc-btn2-label" placeholder="e.g. Join Server" maxlength="32">
+                            </div>
+                            <div class="form-group">
+                                <label>Button 2 URL</label>
+                                <input type="url" id="t-rpc-btn2-url" placeholder="https://discord.gg/...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Auto-Join Voice</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Server ID</label>
+                                <input type="text" id="t-vc-guild">
+                            </div>
+                            <div class="form-group">
+                                <label>Channel ID</label>
+                                <input type="text" id="t-vc-channel">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label class="checkbox-row">
+                                <input type="checkbox" id="t-vc-mute" checked>
+                                <span class="cb-label">Self Mute</span>
+                            </label>
+                            <label class="checkbox-row">
+                                <input type="checkbox" id="t-vc-deaf">
+                                <span class="cb-label">Self Deaf</span>
+                            </label>
+                            <label class="checkbox-row">
+                                <input type="checkbox" id="t-vc-video">
+                                <span class="cb-label">Self Camera</span>
+                            </label>
+                            <label class="checkbox-row">
+                                <input type="checkbox" id="t-vc-stream">
+                                <span class="cb-label">Self Screen Share</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn" onclick="saveToken()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>
