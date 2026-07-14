@@ -129,7 +129,7 @@
                 </header>
                 <div class="content-area flex-col" style="display: flex; flex-direction: column; gap: 20px;">
                     <div class="form-section" style="max-width: 600px; padding: 20px; background: var(--bg-secondary); border-radius: 8px;">
-                        <h2 style="margin-bottom: 15px; color: var(--text-normal); font-size: 1.2rem;">⚡ Send Single Reaction</h2>
+                        <h2 style="margin-bottom: 15px; color: var(--text-normal); font-size: 1.2rem;">Send Single Reaction</h2>
                         <form id="reaction-form" style="display: flex; flex-direction: column; gap: 15px;">
                             <div class="form-group">
                                 <label>Channel ID</label>
@@ -158,12 +158,12 @@
                                     <input type="number" id="delay_max" required min="0" step="0.1" value="5.0">
                                 </div>
                             </div>
-                            <button type="submit" class="btn">⚡ Send Reactions</button>
+                            <button type="submit" class="btn">Start</button>
                         </form>
                     </div>
 
                     <div class="form-section" style="max-width: 600px; padding: 20px; background: var(--bg-secondary); border-radius: 8px;">
-                        <h2 style="margin-bottom: 6px; color: var(--text-normal); font-size: 1.2rem;">📋 Copy All Reactions</h2>
+                        <h2 style="margin-bottom: 6px; color: var(--text-normal); font-size: 1.2rem;">Copy All Reactions</h2>
                         <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Fetch all existing reactions on a message and mirror them using your tokens.</p>
                         <form id="react-all-form" style="display: flex; flex-direction: column; gap: 15px;">
                             <div class="form-group">
@@ -189,13 +189,13 @@
                                     <input type="number" id="all_delay_max" required min="0" step="0.1" value="5.0">
                                 </div>
                             </div>
-                            <button type="submit" class="btn">📋 Copy Reactions</button>
+                            <button type="submit" class="btn">Stat</button>
                         </form>
                     </div>
 
                     <!-- Emoji Bomb -->
                     <div class="form-section" style="max-width: 600px; padding: 20px; background: var(--bg-secondary); border-radius: 8px; border-left: 3px solid #f59e0b;">
-                        <h2 style="margin-bottom: 6px; color: var(--text-normal); font-size: 1.2rem;">💣 Emoji Bomb</h2>
+                        <h2 style="margin-bottom: 6px; color: var(--text-normal); font-size: 1.2rem;">Emoji Bomb</h2>
                         <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Flood a message with multiple different emojis simultaneously.</p>
                         <form id="react-bomb-form" style="display: flex; flex-direction: column; gap: 15px;">
                             <div class="form-group">
@@ -225,13 +225,13 @@
                                     <input type="number" id="bomb_delay_max" required min="0" step="0.1" value="2.0">
                                 </div>
                             </div>
-                            <button type="submit" class="btn" style="background: linear-gradient(135deg, #f59e0b, #d97706);">💣 Launch Emoji Bomb</button>
+                            <button type="submit" class="btn" style="background: linear-gradient(135deg, #f59e0b, #d97706);">Emoji Bomb</button>
                         </form>
                     </div>
 
                     <!-- Remove Reactions -->
                     <div class="form-section" style="max-width: 600px; padding: 20px; background: var(--bg-secondary); border-radius: 8px; border-left: 3px solid #ef4444;">
-                        <h2 style="margin-bottom: 6px; color: var(--text-normal); font-size: 1.2rem;">🗑️ Remove Reactions</h2>
+                        <h2 style="margin-bottom: 6px; color: var(--text-normal); font-size: 1.2rem;">Remove Reactions</h2>
                         <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Remove a specific reaction from a message using multiple tokens.</p>
                         <form id="react-remove-form" style="display: flex; flex-direction: column; gap: 15px;">
                             <div class="form-group">
@@ -261,13 +261,13 @@
                                     <input type="number" id="remove_delay_max" required min="0" step="0.1" value="2.0">
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-danger">🗑️ Remove Reactions</button>
+                            <button type="submit" class="btn btn-danger">Stat</button>
                         </form>
                     </div>
 
                     <!-- Scheduled Reaction -->
                     <div class="form-section" style="max-width: 600px; padding: 20px; background: var(--bg-secondary); border-radius: 8px; border-left: 3px solid #8b5cf6;">
-                        <h2 style="margin-bottom: 6px; color: var(--text-normal); font-size: 1.2rem;">⏰ Scheduled Reaction</h2>
+                        <h2 style="margin-bottom: 6px; color: var(--text-normal); font-size: 1.2rem;">Scheduled Reaction</h2>
                         <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Schedule a reaction to fire after a countdown (client-side timer).</p>
                         <form id="react-scheduled-form" style="display: flex; flex-direction: column; gap: 15px;">
                             <div class="form-group">
@@ -292,8 +292,8 @@
                                 <input type="number" id="sched_delay" required min="1" value="10" placeholder="e.g. 30">
                             </div>
                             <div id="sched-countdown" style="display:none; font-size:1.1rem; font-weight:700; color:#8b5cf6; padding: 10px; background: rgba(139,92,246,0.1); border-radius:6px; text-align:center;"></div>
-                            <button type="submit" class="btn" id="sched-submit-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">⏰ Schedule Reaction</button>
-                            <button type="button" class="btn btn-danger" id="sched-cancel-btn" style="display:none;" onclick="cancelScheduledReaction()">✕ Cancel Schedule</button>
+                            <button type="submit" class="btn" id="sched-submit-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">Schedule Reaction</button>
+                            <button type="button" class="btn btn-danger" id="sched-cancel-btn" style="display:none;" onclick="cancelScheduledReaction()">Cancel Schedule</button>
                         </form>
                     </div>
 
